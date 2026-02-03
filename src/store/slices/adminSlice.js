@@ -15,7 +15,13 @@ export const adminLoginThunk = createAsyncThunk(
   "admin/login",
   async (payload, { rejectWithValue }) => {
     try {
-      return await adminApiRequest(adminEndpoints.login(), { method: "POST", body: payload });
+      const response = await adminApiRequest(adminEndpoints.login(), { method: "POST", body: payload });
+      
+      if (response?.user?.user_role !== "admin") {
+        return rejectWithValue("Access denied: Admin role required.");
+      }
+      
+      return response;
     } catch (e) {
       return rejectWithValue(e.message);
     }
